@@ -18,7 +18,7 @@ default_data$y <- sample(default_data$x)
 default_data$z <- rnorm(length(default_data$x), mean = 8, sd = 0.2)
 x_range <- c(0, 10)
 
-r_plot <- function(x, y, smooth = FALSE, range) {
+r_plot <- function(x, y, smooth = FALSE, range, plot_labels = c("x", "y")) {
   # Filter out values outside of the range
   valid_indices <- x >= range[1] & x <= range[2]
 
@@ -36,8 +36,10 @@ r_plot <- function(x, y, smooth = FALSE, range) {
 
   # Create the plot
   gplot <- ggplot() +
+    labs(x = paste(plot_labels[1], "Axis"), y = paste(plot_labels[2], "Axis")) +
     geom_line(aes(x, y)) +
-    geom_line(aes(x, fitted(model)), col = "#ff0000")
+    geom_line(aes(x, fitted(model)), col = "#ff0000") +
+    labs(title = "Linear Regression Plot")
 
   # If smooth is on, add the smooth line
   if (smooth) {
@@ -175,7 +177,8 @@ server <- function(input, output, session) {
       x = d[[input$x_column]],
       y = d[[input$y_column]],
       smooth = input$showsmooth,
-      range = xrange()
+      range = xrange(),
+      plot_labels = c(input$x_column, input$y_column)
     )
     model <- plot_values$model
     result <- summary(model)
